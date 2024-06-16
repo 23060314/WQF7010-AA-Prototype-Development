@@ -7,36 +7,44 @@ from opencv_apps.msg import FaceArrayStamped
 
 class ReceptionistNode:
   def __init__(self):
-    # initializing node, subscriber and sound client object
+    # initialize node
     rospy.init_node('receptionist_node')
     # register a callback function upon the node is shutting down
     #rospy.on_shutdown(self.cleanup)
     
-    self.subscriber = rospy.Subscriber('/face_detection/faces', FaceArrayStamped, self.greeting)
-    self.soundhandler = SoundClient(blocking=True)
+    # initialize subscriber to listen to 'face_detection/faces' topic
+    self.subscriber = rospy.Subscriber('/face_detection/faces', FaceArrayStamped, self.greet)
+    # initialize a face detection process indicator
     self.face_detected = False
-
+    
+    # initialize sound client object
+    self.soundhandler = SoundClient(blocking=True)
     # pause execution of the node for 1 second to let the sound client to connect to the sound_play server
     rospy.sleep(1)
-
     # stop if any sound_play processes are in the queue
     self.soundhandler.stopAll()
-
+    
+    # clear the terminal
     os.system('clear')
     print('Look at the camera for a second to trigger FSKTM Receptionist...')
-
+  
+  # callback function to perform clean up before the node is shutting down 
   def cleanup(self):
     self.soundhandler.stopAll()
     rospy.signal_shutdown('Shutdown requested by user')
-
-  def greeting(self, msg):
+  
+  # callback function when the subscribed 'face_detection/faces' topic's message is received
+  def greet(self, msg):
     if not self.face_detected and self.detect_face(msg.faces):
       self.face_detected = True
+      # temperary unsubscribe from face_detection topic
       self.subscriber.unregister()
-
+      
+      # greet user with the following messages
       self.soundhandler.say('Welcome to Faculty of Computer Science and Information Tectnology, University Ma-la-ya.')
       self.soundhandler.say('Please select an option below by entering the number.')
-
+      
+      # clear terminal and display the main menu
       os.system('clear')
       print('============================================')
       print('=             Welcome to FSKTM             =')
@@ -51,10 +59,12 @@ class ReceptionistNode:
       print('============================================')
       print('')
       selection = input('Enter an option (0 to exit): ')
-
+      
+      # process user selection
       if selection == 1:
         self.soundhandler.say('Feel free to hang around. Have a good day!')
-      elif selection == 2 or selection == 3: 
+      elif selection == 2: 
+        # display a sub menu
         print('')
         print('')
         print('')
@@ -84,22 +94,28 @@ class ReceptionistNode:
         print('') 
         lecturer_selection = input('Select the lecturer (0 to exit): ')
         
+        # get lecturer name from the selection and speak out where is the lecturer's room location
         lecturer_name = self.get_lecturer_name(lecturer_selection)
         if lecturer_name is not None:
           print('')
           sentence = lecturer_name + " room at management office, level 3 of Faculty of Computer Science and Information Tectnology."
           print(sentence)
           self.soundhandler.say(sentence)
+      elif selection == 3:
+        # launch delivery detection (using yolo3) node by issuing the roslaunch command
+        os.system('roslaunch wqf7010_aa_prototype_development fsktm_delivery_detection.launch')
 
       # pause execution of the node for 3 seconds before re-subscribe to face detection topic
-      rospy.sleep(3)
+      rospy.sleep(1)
 
-      self.subscriber = rospy.Subscriber('/face_detection/faces', FaceArrayStamped, self.greeting)
+      self.subscriber = rospy.Subscriber('/face_detection/faces', FaceArrayStamped, self.greet)
       self.face_detected = False
 
+      # clear the terminal and restart a session
       os.system('clear')
       print('Look at the camera for a second to trigger FSKTM Receptionist...')
-
+  
+  # check if both face and eyes presented on the face_detection message
   def detect_face(self, faces):
     if faces:
       for f in faces:
@@ -134,11 +150,10 @@ class ReceptionistNode:
       return None
 
 if __name__ == '__main__':
-  ReceptionistNode()
-
-  while not rospy.is_shutdown():
-    try:      
-      rospy.spin()
+    try:
+      ReceptionistNode()
+      while not rospy.is_shutdown():      
+        rospy.spin()
     except rospy.ROSInterruptException:
       pass
 
