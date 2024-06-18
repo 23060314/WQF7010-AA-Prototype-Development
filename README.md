@@ -5,12 +5,6 @@ The following demo videos are available at [this link](https://photos.app.goo.gl
 * Receptionist demo (Main program)
 * Delivery detection demo (Subprogram) 
 
-This project was carried out under the supervision of Dr. Zati Hakim, department of Artificial Intelligence, University Malaya, and completed by the following students:
-* Ahmad Syahir (22110047)
-* Khor Shu Yan (22121327)
-* Teo Yin Yin  (22111371)
-* Tham Weng Wai (23060314)
-
 ## Installation Instructions
 Follow the quick setup guide below to run the prototype program. Note that the project is developed under Ubuntu 18.04, utilizing ROS Melodic and Python 2, as required by compatibility with the Jupiter Robot.
 1. Create directories for ROS workspace.
@@ -41,3 +35,9 @@ source ~/catkin_ws/devel/setup.bash
 ```bash
 roslaunch wqf7010_aa_prototype_development fsktm_receptionist.launch
 ```
+## Authors and acknowledgment
+This project was carried out under the supervision of Dr. Zati Hakim, department of Artificial Intelligence, University Malaya, and completed by the following students:
+* Ahmad Syahir (22110047)
+* Khor Shu Yan (22121327)
+* Teo Yin Yin  (22111371)
+* Tham Weng Wai (23060314)
