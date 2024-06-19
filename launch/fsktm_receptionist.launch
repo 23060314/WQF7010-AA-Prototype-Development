@@ -7,10 +7,12 @@
     <param name="camera_frame_id" value="usb_cam" />
     <param name="to_method" value="mmap" />
   </node>
+  <!--
   <node name="image_view" pkg="image_view" type="image_view">
     <remap from="image" to="/usb_cam/image_raw" />
     <param name="autosize" value="true" />
   </node>
+  -->
   <node name="face_detection" pkg="opencv_apps" type="face_detection">
     <remap from="image" to="/usb_cam/image_raw" />
     <param name="use_camera_info" value="false" />
